@@ -7,6 +7,7 @@ use App\Models\Bill;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\ConnectionException;
 
 class AnomalyDetectionService
 {
@@ -63,28 +64,37 @@ class AnomalyDetectionService
     public function checkAnomalyViaAi(User $user, Bill $bill): ?Alert
     {
         $url = $this->aiServiceUrl() . '/anomaly';
-        $response = Http::timeout(10)->post($url, [
-            'user_id' => $user->id,
-            'bill_id' => $bill->id,
-            'amount' => $bill->amount,
-            'provider' => $bill->provider,
-        ]);
 
-        if (! $response->successful()) {
-            Log::warning('AI anomaly check failed', ['status' => $response->status()]);
+        try {
+            $response = Http::timeout(10)->post($url, [
+                'user_id' => $user->id,
+                'bill_id' => $bill->id,
+                'amount' => $bill->amount,
+                'provider' => $bill->provider,
+            ]);
+
+            if (! $response->successful()) {
+                Log::warning('AI anomaly check failed', ['status' => $response->status()]);
+                return $this->checkAnomaly($user, $bill);
+            }
+
+            $data = $response->json();
+            if (empty($data['is_anomaly'])) {
+                return null;
+            }
+
+            return $user->alerts()->create([
+                'bill_id' => $bill->id,
+                'type' => 'anomaly',
+                'message' => $data['message'] ?? 'Unusual bill amount detected.',
+                'threshold_percent' => $data['threshold_percent'] ?? null,
+            ]);
+        } catch (ConnectionException $e) {
+            Log::warning('AI anomaly detection service unavailable', ['error' => $e->getMessage()]);
+            return $this->checkAnomaly($user, $bill);
+        } catch (\Illuminate\Http\Client\Exception $e) {
+            Log::warning('AI anomaly detection request failed', ['error' => $e->getMessage()]);
             return $this->checkAnomaly($user, $bill);
         }
-
-        $data = $response->json();
-        if (empty($data['is_anomaly'])) {
-            return null;
-        }
-
-        return $user->alerts()->create([
-            'bill_id' => $bill->id,
-            'type' => 'anomaly',
-            'message' => $data['message'] ?? 'Unusual bill amount detected.',
-            'threshold_percent' => $data['threshold_percent'] ?? null,
-        ]);
     }
 }

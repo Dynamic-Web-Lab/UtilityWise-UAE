@@ -24,6 +24,7 @@ class BillParsingService
         $url = $this->aiServiceUrl() . '/extract';
         $response = Http::timeout(30)
             ->attach('file', file_get_contents($filePath), basename($filePath))
+            ->withOptions(['stream' => true])
             ->post($url, ['provider' => $provider]);
 
         if (! $response->successful()) {

@@ -23,7 +23,7 @@
     <div class="grid gap-6 md:grid-cols-2">
         <section class="bg-white rounded-lg shadow p-6">
             <h2 class="text-lg font-semibold mb-4">Monthly consumption</h2>
-            <div id="consumption-chart" class="h-64" data-months="{{ json_encode($consumptionByMonth) }}"></div>
+            <div id="consumption-chart" class="h-64" data-months="{{ htmlspecialchars(json_encode($consumptionByMonth), ENT_QUOTES, 'UTF-8') }}"></div>
         </section>
         <section class="bg-white rounded-lg shadow p-6">
             <h2 class="text-lg font-semibold mb-4">Recent bills</h2>
@@ -41,3 +41,48 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var el = document.getElementById('consumption-chart');
+  if (!el || !el.dataset.months) return;
+  try {
+    var raw = JSON.parse(el.dataset.months);
+    var months = Array.isArray(raw) ? raw : [];
+    if (months.length === 0) {
+      el.innerHTML = '<p class="text-gray-500 text-sm p-4">No consumption data yet. Upload bills to see trends.</p>';
+      return;
+    }
+    var labels = months.map(function (m) {
+      var names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return (names[(m.month - 1)] || '') + ' ' + m.year;
+    });
+    var aedData = months.map(function (m) { return Number(m.total_aed) || 0; });
+    new Chart(el.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Amount (AED)',
+          data: aedData,
+          backgroundColor: 'rgba(59, 130, 246, 0.5)',
+          borderColor: 'rgb(59, 130, 246)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  } catch (e) {
+    el.innerHTML = '<p class="text-gray-500 text-sm p-4">Could not load chart.</p>';
+  }
+});
+</script>
+@endpush

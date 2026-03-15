@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\ConnectionException;
 
 class ForecastService
 {
@@ -38,16 +40,23 @@ class ForecastService
     public function forecast(array $amounts): array
     {
         $url = $this->aiServiceUrl() . '/forecast';
-        $response = Http::timeout(5)->post($url, ['amounts' => $amounts]);
 
-        if ($response->successful()) {
-            $data = $response->json();
-            return [
-                'amount' => (float) ($data['amount'] ?? 0),
-                'confidence' => (float) ($data['confidence'] ?? 0),
-                'method' => $data['method'] ?? 'weighted_avg',
-                'sample_size' => (int) ($data['sample_size'] ?? count($amounts)),
-            ];
+        try {
+            $response = Http::timeout(5)->post($url, ['amounts' => $amounts]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return [
+                    'amount' => (float) ($data['amount'] ?? 0),
+                    'confidence' => (float) ($data['confidence'] ?? 0),
+                    'method' => $data['method'] ?? 'weighted_avg',
+                    'sample_size' => (int) ($data['sample_size'] ?? count($amounts)),
+                ];
+            }
+        } catch (ConnectionException $e) {
+            Log::warning('AI forecast service unavailable', ['error' => $e->getMessage()]);
+        } catch (\Illuminate\Http\Client\Exception $e) {
+            Log::warning('AI forecast request failed', ['error' => $e->getMessage()]);
         }
 
         return $this->forecastLocal($amounts);

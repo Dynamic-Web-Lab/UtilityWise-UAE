@@ -7,6 +7,7 @@ use App\Models\Bill;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\ConnectionException;
 
 class LeakDetectionService
 {
@@ -26,6 +27,7 @@ class LeakDetectionService
 
         $previousGallons = $user->consumptionRecords()
             ->where('bill_id', '!=', $bill->id)
+            ->where('record_date', '<', $bill->bill_date)
             ->whereNotNull('gallons')
             ->where('gallons', '>', 0)
             ->orderByDesc('record_date')
@@ -40,23 +42,30 @@ class LeakDetectionService
         }
 
         $url = $this->aiServiceUrl() . '/leak-check';
-        $response = Http::timeout(5)->post($url, [
-            'current_gallons' => $currentGallons,
-            'previous_gallons' => $previousGallons,
-            'spike_factor' => 1.5,
-        ]);
 
-        if ($response->successful()) {
-            $data = $response->json();
-            if (! empty($data['is_leak']) && ! empty($data['message'])) {
-                return $user->alerts()->create([
-                    'bill_id' => $bill->id,
-                    'type' => 'leak',
-                    'message' => $data['message'],
-                    'threshold_percent' => null,
-                ]);
+        try {
+            $response = Http::timeout(5)->post($url, [
+                'current_gallons' => $currentGallons,
+                'previous_gallons' => $previousGallons,
+                'spike_factor' => 1.5,
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (! empty($data['is_leak']) && ! empty($data['message'])) {
+                    return $user->alerts()->create([
+                        'bill_id' => $bill->id,
+                        'type' => 'leak',
+                        'message' => $data['message'],
+                        'threshold_percent' => null,
+                    ]);
+                }
+                return null;
             }
-            return null;
+        } catch (ConnectionException $e) {
+            Log::warning('AI leak detection service unavailable', ['error' => $e->getMessage()]);
+        } catch (\Illuminate\Http\Client\Exception $e) {
+            Log::warning('AI leak detection request failed', ['error' => $e->getMessage()]);
         }
 
         return $this->checkWaterSpikeLocal($user, $bill, $currentGallons, $previousGallons);
