@@ -13,14 +13,20 @@
                 <h2 class="font-semibold">CSV</h2>
                 <p class="text-sm text-gray-500">Spreadsheet-friendly (Excel, Google Sheets).</p>
             </div>
-            <a href="{{ route('export.csv') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Download CSV</a>
+            <form action="{{ route('export.csv') }}" method="POST">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Download CSV</button>
+            </form>
         </li>
         <li class="flex items-center justify-between bg-white rounded-lg shadow p-4">
             <div>
                 <h2 class="font-semibold">PDF</h2>
                 <p class="text-sm text-gray-500">Open in browser and use Print → Save as PDF.</p>
             </div>
-            <a href="{{ route('export.pdf') }}" target="_blank" rel="noopener" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">View / Print PDF</a>
+            <form action="{{ route('export.pdf') }}" method="POST" target="_blank" rel="noopener">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">View / Print PDF</button>
+            </form>
         </li>
     </ul>
 </div>

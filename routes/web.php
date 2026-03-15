@@ -15,8 +15,8 @@ Route::middleware(['auth'])->group(function (): void {
     Route::get('/solar', [SolarController::class, 'index'])->name('solar.index');
     Route::get('/solar/calculate', [SolarController::class, 'calculate'])->name('solar.calculate');
     Route::get('/export', [ExportController::class, 'index'])->name('export.index');
-    Route::get('/export/csv', [ExportController::class, 'csv'])->name('export.csv');
-    Route::get('/export/pdf', [ExportController::class, 'pdf'])->name('export.pdf');
+    Route::post('/export/csv', [ExportController::class, 'csv'])->name('export.csv');
+    Route::post('/export/pdf', [ExportController::class, 'pdf'])->name('export.pdf');
 });
 
 require __DIR__.'/auth.php';
