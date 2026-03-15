@@ -16,9 +16,10 @@ By participating, you agree to uphold our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 1. **Clone and enter the repo**
    ```bash
-   git clone https://github.com/your-org/UtilityWise-UAE.git
+   git clone https://github.com/YOUR_USERNAME_OR_ORG/UtilityWise-UAE.git
    cd UtilityWise-UAE
    ```
+   (Replace with your fork or the canonical repo URL.)
 
 2. **Backend (Laravel)**  
    See [README.md](README.md#installation) for PHP/Composer and `.env` setup. Use `.env.example` as a template; never commit `.env`.

@@ -7,6 +7,8 @@
 [![DynamicWebLab](https://img.shields.io/badge/Powered%20By-DynamicWebLab-0073e6)](https://dynamicweblab.com)
 
 > **⚠️ Disclaimer:** This software is for personal tracking and analysis only. It is not affiliated with DEWA, FEWA, ADDC, or any UAE utility provider. Bill data is processed locally and never shared with third parties.
+>
+> This is a **public open-source repository**. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for how to contribute or report security issues.
 
 ---
 
