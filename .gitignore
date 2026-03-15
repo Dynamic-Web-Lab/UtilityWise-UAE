@@ -1,0 +1,112 @@
+# --- GitHub / OS ---
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+
+# --- Laravel / PHP ---
+/vendor/
+/node_modules/
+/public/build/
+/public/hot
+/public/storage
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+.env
+.env.backup
+.env.production
+.env.*.local
+.phpunit.result.cache
+phpunit.xml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.auth.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+.env/
+
+# --- Testing / Coverage ---
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+.phpunit.cache/
+
+# --- IDE / Editor ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# --- Docker (local overrides only; keep docker-compose in repo) ---
+docker-compose.override.yml
+.docker/
+
+# --- Logs / Temp / Build ---
+*.log
+*.tmp
+*.temp
+.cache/
+
+# --- WordPress (if in same repo) ---
+wp-content/uploads/
+wp-content/cache/
+wp-content/advanced-cache.php
+wp-content/backup-db/
+wp-content/backups/
+*.sql
+*.sql.gz
+
+# --- Secrets / Keys ---
+*.pem
+*.key
+!storage/*.key.example
+secrets/
+.secrets
+
+# --- Optional: keep lock files for reproducible builds ---
+# Uncomment to ignore (not recommended for apps):
+# composer.lock
+# package-lock.json
+# yarn.lock

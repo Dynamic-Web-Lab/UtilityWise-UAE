@@ -15,6 +15,7 @@
 - [About](#about)
 - [The Problem](#the-problem)
 - [Features](#features)
+- [Free vs Paid Modules](#free-vs-paid-modules)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
@@ -65,6 +66,18 @@ UAE residents face significant challenges with utility bills:
 - [ ] **Landlord Dashboard:** Track multiple property utilities for tenant billing.
 - [ ] **Property Management API:** Integrate with building management systems.
 - [ ] **White-Label:** Utility companies can use for customer engagement.
+
+---
+
+## 🆓 Free vs Paid Modules
+
+UtilityWise UAE is **open source (MIT)**. The core platform is free and self-hostable:
+
+- **Free (open source):** Bill upload & OCR, consumption dashboard, anomaly alerts, multi-provider support, Docker setup, encryption, and—as we ship them—basic forecasting, leak detection, basic solar ROI, multi-property (single user), and read-only API.
+
+- **Paid (optional):** Managed cloud hosting, community benchmarking service, advanced solar ROI, weather-enhanced forecasting, landlord/property-management features, white-label, and premium/enterprise support. These fund maintenance and keep the core free.
+
+See **[docs/ROADMAP.md](docs/ROADMAP.md)** for the full phased plan and free/paid breakdown.
 
 ---
 
@@ -124,4 +137,44 @@ utilitywise-uae/
 │   └── Privacy_Guidelines.md
 ├── .env.example
 ├── README.md
-└── LICENSE
+├── LICENSE
+├── CONTRIBUTING.md
+└── CODE_OF_CONDUCT.md
+```
+
+---
+
+## 🚀 Installation
+
+*(See [docs/ROADMAP.md](docs/ROADMAP.md) for current phase. Full installation steps will be added as the codebase is built.)*
+
+1. Clone the repo and copy `.env.example` to `.env`.
+2. Backend: `composer install`, configure DB and app key.
+3. AI service: from `ai-service/`, create a venv and `pip install -r requirements.txt`.
+4. Optional: use Docker from `docker/` for a full stack.
+
+---
+
+## ⚙️ Configuration
+
+Configure `.env` with your database, Redis, and (if used) AI service URL. Never commit `.env` — it is in `.gitignore`.
+
+---
+
+## 🔒 Security & Privacy
+
+- Bill data is encrypted at rest; processing is local or self-hosted.
+- No bill data is sent to third parties by the open-source core.
+- See `docs/Privacy_Guidelines.md` (when added) for details.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for setup and pull request flow, and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
