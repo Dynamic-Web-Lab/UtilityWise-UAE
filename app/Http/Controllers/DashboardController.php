@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ForecastService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private ForecastService $forecastService
+    ) {}
+
     public function index(Request $request): View
     {
         $user = $request->user();
@@ -19,12 +24,15 @@ class DashboardController extends Controller
             ->get();
 
         $recentBills = $user->bills()->latest('bill_date')->take(5)->get();
-        $alertsCount = $user->alerts()->where('read_at', null)->count();
+        $alertsCount = $user->alerts()->whereNull('read_at')->count();
+
+        $forecast = $this->forecastService->forecastForUser($user);
 
         return view('dashboard', [
             'consumptionByMonth' => $consumptionByMonth,
             'recentBills' => $recentBills,
             'alertsCount' => $alertsCount,
+            'forecast' => $forecast,
         ]);
     }
 }

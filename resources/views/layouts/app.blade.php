@@ -15,6 +15,8 @@
                     <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
                     <a href="{{ route('bills.index') }}" class="text-gray-600 hover:text-gray-900">Bills</a>
                     <a href="{{ route('alerts.index') }}" class="text-gray-600 hover:text-gray-900">Alerts</a>
+                    <a href="{{ route('solar.index') }}" class="text-gray-600 hover:text-gray-900">Solar ROI</a>
+                    <a href="{{ route('export.index') }}" class="text-gray-600 hover:text-gray-900">Export</a>
                     <form action="{{ route('logout') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" class="text-gray-600 hover:text-gray-900">Logout</button>

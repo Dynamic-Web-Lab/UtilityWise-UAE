@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\ConsumptionRecord;
 use App\Services\AnomalyDetectionService;
 use App\Services\BillParsingService;
+use App\Services\LeakDetectionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,8 +24,11 @@ class ProcessBillOCR implements ShouldQueue
         private ?string $storagePath = null
     ) {}
 
-    public function handle(BillParsingService $billParsing, AnomalyDetectionService $anomaly): void
-    {
+    public function handle(
+        BillParsingService $billParsing,
+        AnomalyDetectionService $anomaly,
+        LeakDetectionService $leakDetection
+    ): void {
         $parsed = $billParsing->parseBill($this->filePath, $this->provider);
         $bill = $billParsing->createBillFromParsedData($this->user, $parsed, $this->storagePath);
 
@@ -39,5 +43,9 @@ class ProcessBillOCR implements ShouldQueue
         ]);
 
         $anomaly->checkAnomaly($this->user, $bill);
+
+        if (isset($parsed['consumption_gallons']) && $parsed['consumption_gallons'] > 0) {
+            $leakDetection->checkWaterSpike($this->user, $bill, (float) $parsed['consumption_gallons']);
+        }
     }
 }

@@ -47,11 +47,11 @@ def _mock_extract(content: bytes, filename: str) -> str:
 
 
 def _parse_by_provider(text: str, provider: str) -> dict[str, Any]:
-    """Parse text for common UAE bill fields."""
-    amount = _extract_amount(text)
-    bill_date = _extract_date(text)
-    kwh = _extract_kwh(text)
-    gallons = _extract_gallons(text)
+    """Parse text; use provider-specific patterns when available (Phase 2: improved OCR)."""
+    amount = _extract_amount_provider(text, provider) or _extract_amount(text)
+    bill_date = _extract_date_provider(text, provider) or _extract_date(text)
+    kwh = _extract_kwh_provider(text, provider) or _extract_kwh(text)
+    gallons = _extract_gallons_provider(text, provider) or _extract_gallons(text)
     return {
         "amount": amount,
         "bill_date": bill_date,
@@ -59,6 +59,67 @@ def _parse_by_provider(text: str, provider: str) -> dict[str, Any]:
         "consumption_gallons": gallons,
         "provider": provider,
     }
+
+
+def _extract_amount_provider(text: str, provider: str) -> float | None:
+    """Provider-specific amount patterns (DEWA, FEWA, ADDC, SEWA, etc.)."""
+    patterns = [
+        r"total\s*(?:amount|due|payable)[:\s]*([\d,]+\.?\d*)\s*(?:AED|aed)",
+        r"amount\s*due[:\s]*([\d,]+\.?\d*)",
+        r"grand\s*total[:\s]*([\d,]+\.?\d*)",
+        r"(?:DEWA|FEWA|ADDC|SEWA).*?([\d,]+\.?\d*)\s*AED",
+    ]
+    for p in patterns:
+        m = re.search(p, text, re.IGNORECASE | re.DOTALL)
+        if m:
+            return float(m.group(1).replace(",", ""))
+    return None
+
+
+def _extract_date_provider(text: str, provider: str) -> str | None:
+    """Provider-specific date patterns (bill date, issue date)."""
+    patterns = [
+        r"bill\s*date[:\s]*(\d{1,2})[-/](\d{1,2})[-/](\d{4})",
+        r"issue\s*date[:\s]*(\d{1,2})[-/](\d{1,2})[-/](\d{4})",
+        r"(\d{4})[-/](\d{1,2})[-/](\d{1,2})",
+    ]
+    for p in patterns:
+        m = re.search(p, text, re.IGNORECASE)
+        if m:
+            g = m.groups()
+            if len(g[0]) == 4:
+                return f"{g[0]}-{g[1].zfill(2)}-{g[2].zfill(2)}"
+            return f"{g[2]}-{g[1].zfill(2)}-{g[0].zfill(2)}"
+    return None
+
+
+def _extract_kwh_provider(text: str, provider: str) -> float | None:
+    """Provider-specific electricity consumption (kWh)."""
+    patterns = [
+        r"electricity\s*consumption[:\s]*([\d,]+\.?\d*)\s*kWh",
+        r"energy\s*consumption[:\s]*([\d,]+\.?\d*)",
+        r"kWh[:\s]*([\d,]+\.?\d*)",
+        r"units?\s*consumed[:\s]*([\d,]+\.?\d*)",
+    ]
+    for p in patterns:
+        m = re.search(p, text, re.IGNORECASE)
+        if m:
+            return float(m.group(1).replace(",", ""))
+    return None
+
+
+def _extract_gallons_provider(text: str, provider: str) -> float | None:
+    """Provider-specific water consumption (gallons)."""
+    patterns = [
+        r"water\s*consumption[:\s]*([\d,]+\.?\d*)\s*(?:gal|gallons?|IG)",
+        r"gallons?[:\s]*([\d,]+\.?\d*)",
+        r"(\d+(?:,\d+)*(?:\.\d+)?)\s*gal",
+    ]
+    for p in patterns:
+        m = re.search(p, text, re.IGNORECASE)
+        if m:
+            return float(m.group(1).replace(",", ""))
+    return None
 
 
 def _extract_amount(text: str) -> float:

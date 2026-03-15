@@ -52,11 +52,11 @@ This roadmap defines what ships as **free & open source** (MIT) and what is offe
 
 | # | Item | Status | Notes |
 |---|------|--------|--------|
-| 1 | **Bill forecasting** | 🔲 Planned | ML model: historical + optional weather; runs on user’s machine or self-hosted |
-| 2 | **Leak detection alert** | 🔲 Planned | Rule/heuristic-based water spike detection; no cloud required |
-| 3 | **Solar ROI calculator (basic)** | 🔲 Planned | Formula-based estimate using local tariffs; open algorithm |
-| 4 | **Improve OCR accuracy** | 🔲 Planned | Better parsing for DEWA/FEWA/ADDC etc.; open source |
-| 5 | **Export (CSV/PDF)** | 🔲 Planned | Export history for personal use |
+| 1 | **Bill forecasting** | ✅ Done | Weighted-avg forecast; AI `/forecast` + Laravel ForecastService; dashboard widget |
+| 2 | **Leak detection alert** | ✅ Done | Heuristic water spike; AI `/leak-check` + LeakDetectionService; alert type `leak` |
+| 3 | **Solar ROI calculator (basic)** | ✅ Done | Formula-based; SolarController + views; payback estimate |
+| 4 | **Improve OCR accuracy** | ✅ Done | Provider-specific regex for amount, date, kWh, gallons in `ocr_extractor.py` |
+| 5 | **Export (CSV/PDF)** | ✅ Done | ExportController: CSV download; PDF = print-friendly HTML |
 
 ### Paid (Optional add-ons, Phase 2)
 

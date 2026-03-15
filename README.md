@@ -59,10 +59,11 @@ UAE residents face significant challenges with utility bills:
 - [x] **Provider Support:** DEWA, FEWA, ADDC, SEWA, Empower, Tabreed, Du, Etisalat.
 
 ### 🤖 AI & Advanced (Phase 2)
-- [ ] **Bill Forecasting:** ML model predicts next month's bill based on historical data + weather.
-- [ ] **Community Benchmarking:** Anonymous comparison with similar properties (same area, type).
-- [ ] **Leak Detection Alert:** Flags unusual water consumption patterns suggesting leaks.
-- [ ] **Solar ROI Calculator:** Estimates savings if user installs solar panels.
+- [x] **Bill Forecasting:** Weighted-avg prediction from historical bills (dashboard + AI `/forecast`).
+- [ ] **Community Benchmarking:** Anonymous comparison with similar properties (same area, type) — *paid add-on*.
+- [x] **Leak Detection Alert:** Heuristic water spike detection; creates `leak` alert when consumption is 1.5x+ average.
+- [x] **Solar ROI Calculator:** Basic payback estimate (formula-based; see Solar ROI in app).
+- [x] **Export (CSV/PDF):** Download bill history as CSV or print-friendly PDF.
 
 ### 🏢 Enterprise (Phase 3)
 - [ ] **Landlord Dashboard:** Track multiple property utilities for tenant billing.
