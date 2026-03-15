@@ -28,7 +28,14 @@ class BillParsingService
             ->post($url, ['provider' => $provider]);
 
         if (! $response->successful()) {
-            Log::warning('AI service OCR failed', ['status' => $response->status(), 'body' => $response->body()]);
+            $status = $response->status();
+            Log::warning('AI service OCR failed', ['status' => $status, 'body' => $response->body()]);
+
+            if ($status >= 500) {
+                throw new \RuntimeException('AI service is temporarily unavailable. Please try again later.');
+            } elseif ($status >= 400) {
+                throw new \RuntimeException('Unable to process the uploaded bill. Please ensure it is a valid PDF or image file.');
+            }
             throw new \RuntimeException('Bill extraction failed. Please try again.');
         }
 

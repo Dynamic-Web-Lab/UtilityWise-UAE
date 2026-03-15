@@ -27,7 +27,7 @@
                 <tr>
                     <td class="border border-gray-300 px-4 py-2">{{ $bill->bill_date->format('Y-m-d') }}</td>
                     <td class="border border-gray-300 px-4 py-2">{{ strtoupper($bill->provider) }}</td>
-                    <td class="border border-gray-300 px-4 py-2 text-right">{{ number_format($bill->amount, 2) }}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-right">{{ number_format($bill->amount ?? 0, 2) }}</td>
                     <td class="border border-gray-300 px-4 py-2 text-right">
                         <a href="{{ route('bills.edit', $bill) }}" class="text-blue-600">Edit</a>
                         <form action="{{ route('bills.destroy', $bill) }}" method="POST" class="inline" onsubmit="return confirm('Delete this bill?');">

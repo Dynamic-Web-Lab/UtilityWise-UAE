@@ -73,6 +73,11 @@ class LeakDetectionService
 
     private function checkWaterSpikeLocal(User $user, Bill $bill, float $currentGallons, array $previousGallons): ?Alert
     {
+        $previousGallons = array_filter($previousGallons, fn ($v) => $v > 0);
+        if (empty($previousGallons)) {
+            return null;
+        }
+
         $avg = array_sum($previousGallons) / count($previousGallons);
         if ($avg <= 0) {
             return null;
