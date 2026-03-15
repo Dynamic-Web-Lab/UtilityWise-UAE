@@ -1,0 +1,71 @@
+# UtilityWise UAE — Phase 1 stack (Laravel + AI service + MySQL + Redis)
+# Usage: from repo root, run: docker compose -f docker/docker-compose.yml up -d
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.php
+    container_name: utilitywise-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ..:/var/www
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=mysql
+      - REDIS_HOST=redis
+      - AI_SERVICE_URL=http://ai-service:8001
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - utilitywise
+
+  ai-service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.python
+    container_name: utilitywise-ai
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ../ai-service:/app
+    ports:
+      - "8001:8001"
+    command: uvicorn main:app --host 0.0.0.0 --port 8001
+    networks:
+      - utilitywise
+
+  mysql:
+    image: mysql:8.0
+    container_name: utilitywise-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: utilitywise
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: utilitywise
+      MYSQL_PASSWORD: secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - utilitywise
+
+  redis:
+    image: redis:7-alpine
+    container_name: utilitywise-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - utilitywise
+
+volumes:
+  mysql_data:
+
+networks:
+  utilitywise:
+    driver: bridge

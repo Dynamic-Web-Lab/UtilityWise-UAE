@@ -29,9 +29,9 @@ This roadmap defines what ships as **free & open source** (MIT) and what is offe
 | 4 | Multi-provider support (DEWA, FEWA, ADDC, SEWA, Empower, Tabreed, Du, Etisalat) | ✅ Done | Parser per provider |
 | 5 | Docker setup for self-hosting | ✅ Done | PHP + Python services |
 | 6 | Encrypted bill storage & privacy docs | ✅ Done | `EncryptBillData`, docs |
-| 7 | Docs: installation, config, UAE tariffs, privacy | 🔲 Planned | `docs/` |
-| 8 | Basic test suite (PHPUnit + PyTest) | 🔲 Planned | Critical paths |
-| 9 | Contributing guide + code of conduct | 🔲 Planned | For public repo |
+| 7 | Docs: installation, config, UAE tariffs, privacy | ✅ Done | `docs/UAE_Utility_Tariffs.md`, `docs/Privacy_Guidelines.md` |
+| 8 | Basic test suite (PHPUnit + PyTest) | ✅ Started | `tests/Unit`, `phpunit.xml` |
+| 9 | Contributing guide + code of conduct | ✅ Done | `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` |
 
 ### Paid (Optional add-ons, Phase 1)
 
