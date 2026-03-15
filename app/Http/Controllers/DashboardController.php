@@ -21,9 +21,10 @@ class DashboardController extends Controller
             ->groupBy('year', 'month')
             ->orderBy('year')
             ->orderBy('month')
-            ->get();
+            ->get()
+            ->keyBy(fn ($item) => "{$item->year}-{$item->month}");
 
-        $recentBills = $user->bills()->latest('bill_date')->take(5)->get();
+        $recentBills = $user->bills()->with('user')->latest('bill_date')->take(5)->get();
         $alertsCount = $user->alerts()->whereNull('read_at')->count();
 
         $forecast = $this->forecastService->forecastForUser($user);

@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -32,17 +33,22 @@ class ProcessBillOCR implements ShouldQueue
     ): void {
         try {
             $parsed = $billParsing->parseBill($this->filePath, $this->provider);
-            $bill = $billParsing->createBillFromParsedData($this->user, $parsed, $this->storagePath);
 
-            ConsumptionRecord::create([
-                'user_id' => $this->user->id,
-                'bill_id' => $bill->id,
-                'record_date' => $bill->bill_date,
-                'kwh' => $parsed['consumption_kwh'],
-                'gallons' => $parsed['consumption_gallons'],
-                'amount_aed' => $parsed['amount'],
-                'provider' => $this->provider,
-            ]);
+            $bill = DB::transaction(function () use ($billParsing, $parsed) {
+                $bill = $billParsing->createBillFromParsedData($this->user, $parsed, $this->storagePath);
+
+                ConsumptionRecord::create([
+                    'user_id' => $this->user->id,
+                    'bill_id' => $bill->id,
+                    'record_date' => $bill->bill_date,
+                    'kwh' => $parsed['consumption_kwh'],
+                    'gallons' => $parsed['consumption_gallons'],
+                    'amount_aed' => $parsed['amount'],
+                    'provider' => $this->provider,
+                ]);
+
+                return $bill;
+            });
 
             $anomaly->checkAnomaly($this->user, $bill);
 
